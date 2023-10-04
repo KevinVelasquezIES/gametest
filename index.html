@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+  <style>
+    * {
+      padding: 0;
+      margin: 0;
+    }
+  </style>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Hola mundo</title>
+  </head>
+  <body>
+    <script src="./pixi.min.js"></script>
+    <script>
+      let renderer = PIXI.autoDetectRenderer(256, 256);
+      document.body.appendChild(renderer.view);
+      renderer.view.style.border = "1px dashed black";
+      renderer.backgroundColor = 0xffffff;
+      renderer.view.style.position = "absolute";
+      renderer.view.style.width = window.innerWidth + "px";
+      renderer.view.style.height = window.innerHeight + "px";
+      renderer.view.style.display = "block";
+      let stage = new PIXI.Container();
+      renderer.render(stage);
+    </script>
+  </body>
+</html>
