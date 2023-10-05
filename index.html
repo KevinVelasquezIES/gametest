@@ -9,21 +9,38 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Hola mundo</title>
+    <title>Learn PIXI</title>
   </head>
   <body>
     <script src="./pixi.min.js"></script>
     <script>
-      let renderer = PIXI.autoDetectRenderer(256, 256);
+      let Container = PIXI.Container,
+        autoDetectRenderer = PIXI.autoDetectRenderer,
+        loader = PIXI.loader,
+        resources = PIXI.loader.resources,
+        Sprite = PIXI.Sprite;
+
+      //Create the stage and renderer
+      let stage = new Container(),
+        renderer = autoDetectRenderer(1080, 1920);
       document.body.appendChild(renderer.view);
-      renderer.view.style.border = "1px dashed black";
-      renderer.backgroundColor = 0xffffff;
-      renderer.view.style.position = "absolute";
-      renderer.view.style.width = window.innerWidth + "px";
-      renderer.view.style.height = window.innerHeight + "px";
-      renderer.view.style.display = "block";
-      let stage = new PIXI.Container();
-      renderer.render(stage);
+
+      //Use Pixi's built-in `loader` object to load an image
+      loader.add("./images/Super_vegito_sprite.webp").load(setup);
+
+      //This `setup` function will run when the image has loaded
+      function setup() {
+        //Create the sprite from the texture
+        let vegetto1 = new Sprite(
+          resources["./images/Super_vegito_sprite.webp"].texture
+        );
+
+        //Add the sprite to the stage
+        stage.addChild(vegetto1);
+
+        //Render the stage
+        renderer.render(stage);
+      }
     </script>
   </body>
 </html>
