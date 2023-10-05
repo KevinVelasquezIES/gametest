@@ -31,6 +31,9 @@
           "./images/Vegito_sprite.webp",
           "./images/Super_vegito_sprite.webp",
           "./images/Blue_vegito_sprite.webp",
+          "./images/Vegetto1.png",
+          "./images/treasureHunter/treasureHunter.png",
+          "./images/treasureHunter/treasureHunter.json",
         ])
         .on("progress", loadProgressHandler)
         .load(setup);
@@ -41,6 +44,8 @@
         console.log(`loading: ${"./images/Super_vegito_sprite.webp"}`);
         console.log(`loading: ${loader.progress}`);
         console.log(`loading: ${"./images/Vegito_sprite.webp"}`);
+        console.log(`loading: ${loader.progress}`);
+        console.log(`loading: ${"./images/Vegetto1.png"}`);
         console.log(`loading: ${loader.progress}`);
       }
 
@@ -57,24 +62,28 @@
         let vegetto2 = new Sprite(
           resources["./images/Blue_vegito_sprite.webp"].texture
         );
+        let vegettoHd = new Sprite(resources["./images/Vegetto1.png"].texture);
 
         //Add the sprite to the stage
-        stage.addChild(vegetto1, vegetto0, vegetto2);
+        stage.addChild(vegetto1, vegetto0, vegetto2, vegettoHd);
 
         //The sprite can make it visible or not
-        vegetto0.visible = true;
-        vegetto1.visible = true;
-        vegetto2.visible = true;
+        vegetto0.visible = false;
+        vegetto1.visible = false;
+        vegetto2.visible = false;
+        vegettoHd.visible = true;
 
         //Set position about (X, Y) coordinates, (0, 0) are top-left corner
         vegetto0.position.set(-25, -20);
         vegetto1.position.set(75, 305);
         vegetto2.position.set(175, 630);
+        vegettoHd.position.set(200, 500);
 
         //Set width o height to change size on sprite or use scale to change it
         vegetto0.scale.set(0.8, 0.8);
         vegetto1.scale.set(0.8, 0.8);
         vegetto2.scale.set(0.8, 0.8);
+        vegettoHd.scale.set(0.3, 0.3);
 
         //Set rotation on Radiand, use the formulas if you need it
         //radians = degrees * (Math.PI / 180);
@@ -88,6 +97,7 @@
         //vegetto0.anchor.set(0.5, 0.5);
         //vegetto1.anchor.set(0.5, 0.5);
         //vegetto2.anchor.set(0.5, 0.5);
+        vegettoHd.anchor.set(0.5, 0.5);
 
         //Render the stage
         renderer.render(stage);
