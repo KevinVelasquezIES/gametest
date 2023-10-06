@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Moving Sprites</title>
+  </head>
+  <body>
+    <script src="./pixi.min.js"></script>
+    <script>
+      let Container = PIXI.Container,
+        autoDetectRenderer = PIXI.autoDetectRenderer,
+        loader = PIXI.loader,
+        resources = PIXI.loader.resources,
+        Sprite = PIXI.Sprite;
+
+      //Create a Pixi stage and renderer
+      let stage = new Container(),
+        renderer = autoDetectRenderer(512, 512);
+      document.body.appendChild(renderer.view);
+
+      //Set the canvas's border style and background color
+      renderer.view.style.border = "1px dashed black";
+      renderer.backgroundColor = "0xFFFFFF";
+
+      //load an image and run the `setup` function when it's done
+      loader.add("./images/Super_vegito_sprite.webp").load(setup);
+
+      //Define any variables that are used in more than one function
+      let superVegitto, state;
+
+      function keyboard(keyCode) {
+        let key = {};
+        key.code = keyCode;
+        key.isDown = false;
+        key.isUp = true;
+        key.press = undefined;
+        key.release = undefined;
+        //The `downHandler`
+        key.downHandler = (event) => {
+          if (event.keyCode === key.code) {
+            if (key.isUp && key.press) key.press();
+            key.isDown = true;
+            key.isUp = false;
+          }
+          event.preventDefault();
+        };
+        //The `upHandler`
+        key.upHandler = (event) => {
+          if (event.keyCode === key.code) {
+            if (key.isDown && key.release) key.release();
+            key.isDown = false;
+            key.isUp = true;
+          }
+          event.preventDefault();
+        };
+        //Attach event listeners
+        window.addEventListener("keydown", key.downHandler.bind(key), false);
+        window.addEventListener("keyup", key.upHandler.bind(key), false);
+        //Return the `key` object
+        return key;
+      }
+
+      function setup() {
+        //Create the `superVegitto` sprite
+        superVegitto = new Sprite(
+          resources["./images/Super_vegito_sprite.webp"].texture
+        );
+
+        superVegitto.scale.set(0.4, 0.4);
+
+        //Center the sprite
+        superVegitto.x = renderer.view.width / 2 - superVegitto.width / 2;
+        superVegitto.y = renderer.view.height / 2 - superVegitto.height / 2;
+        //Initialize the sprites's velocity variables
+        superVegitto.vx = 0;
+        superVegitto.vy = 0;
+
+        //Add the sprite to the stage
+        stage.addChild(superVegitto);
+
+        //Capture the keyboard arrow keys
+        let left = keyboard(37),
+          up = keyboard(38),
+          right = keyboard(39),
+          down = keyboard(40);
+
+        //Left arrow key `press` method
+        left.press = () => {
+          //Change the sprite's velocity when the key is pressed
+          superVegitto.vx = -5;
+          superVegitto.vy = 0;
+        };
+
+        //Left arrow key `release` method
+        left.release = () => {
+          //If the left arrow has been released, and the right arrow isn't down,
+          //and the superVegitto isn't moving vertically, stop the sprite from moving
+          //by setting its velocity to zero
+          if (!right.isDown && superVegitto.vy === 0) {
+            superVegitto.vx = 0;
+          }
+        };
+        //Up
+        up.press = () => {
+          superVegitto.vy = -5;
+          superVegitto.vx = 0;
+        };
+        up.release = () => {
+          if (!down.isDown && superVegitto.vx === 0) {
+            superVegitto.vy = 0;
+          }
+        };
+        //Right
+        right.press = () => {
+          superVegitto.vx = 5;
+          superVegitto.vy = 0;
+        };
+        right.release = () => {
+          if (!left.isDown && superVegitto.vy === 0) {
+            superVegitto.vx = 0;
+          }
+        };
+        //Down
+        down.press = () => {
+          superVegitto.vy = 5;
+          superVegitto.vx = 0;
+        };
+        down.release = () => {
+          if (!up.isDown && superVegitto.vx === 0) {
+            superVegitto.vy = 0;
+          }
+        };
+        //Set the game's current state to `play`
+        state = play;
+
+        //Start the game loop
+        gameLoop();
+      }
+
+      function gameLoop() {
+        //Loop this function 60 times per second
+        requestAnimationFrame(gameLoop);
+
+        //Update the current game state
+        state();
+
+        //Render the stage
+        renderer.render(stage);
+      }
+
+      function play() {
+        //Move the sprite 1 pixel per frame
+        superVegitto.x += superVegitto.vx;
+        superVegitto.y += superVegitto.vy;
+      }
+    </script>
+  </body>
+</html>
