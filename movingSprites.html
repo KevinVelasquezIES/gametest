@@ -8,6 +8,7 @@
   <body>
     <script src="./pixi.min.js"></script>
     <script src="./keyboard.js"></script>
+    <script src="./contain.js"></script>
     <script>
       let Container = PIXI.Container,
         autoDetectRenderer = PIXI.autoDetectRenderer,
@@ -28,7 +29,7 @@
       loader.add("./images/Super_vegito_sprite.webp").load(setup);
 
       //Define any variables that are used in more than one function
-      let superVegitto, state;
+      let superVegitto, state, collision;
 
       function setup() {
         //Create the `superVegitto` sprite
@@ -44,6 +45,13 @@
         //Initialize the sprites's velocity variables
         superVegitto.vx = 0;
         superVegitto.vy = 0;
+        //Initialize the sprites's acceleration variables
+        superVegitto.accelerationX = 0;
+        superVegitto.accelerationY = 0;
+        superVegitto.frictionX = 1;
+        superVegitto.frictionY = 1;
+        superVegitto.speed = 0.2;
+        superVegitto.drag = 0.98;
 
         //Add the sprite to the stage
         stage.addChild(superVegitto);
@@ -57,8 +65,10 @@
         //Left arrow key `press` method
         left.press = () => {
           //Change the sprite's velocity when the key is pressed
-          superVegitto.vx = -5;
-          superVegitto.vy = 0;
+          //superVegitto.vx = -5;
+          //superVegitto.vy = 0;
+          superVegitto.accelerationX = -superVegitto.speed;
+          superVegitto.frictionX = 1;
         };
 
         //Left arrow key `release` method
@@ -67,39 +77,54 @@
           //and the superVegitto isn't moving vertically, stop the sprite from moving
           //by setting its velocity to zero
           if (!right.isDown && superVegitto.vy === 0) {
-            superVegitto.vx = 0;
+            //superVegitto.vx = 0;
+            superVegitto.accelerationX = 0;
+            superVegitto.frictionX = superVegitto.drag;
           }
         };
         //Up
         up.press = () => {
-          superVegitto.vy = -5;
-          superVegitto.vx = 0;
+          //superVegitto.vy = -5;
+          //superVegitto.vx = 0;
+          superVegitto.accelerationY = -superVegitto.speed;
+          superVegitto.frictionY = 1;
         };
         up.release = () => {
           if (!down.isDown && superVegitto.vx === 0) {
-            superVegitto.vy = 0;
+            //superVegitto.vy = 0;
+            superVegitto.accelerationY = 0;
+            superVegitto.frictionY = superVegitto.drag;
           }
         };
         //Right
         right.press = () => {
-          superVegitto.vx = 5;
-          superVegitto.vy = 0;
+          //superVegitto.vx = 5;
+          //superVegitto.vy = 0;
+          superVegitto.accelerationX = superVegitto.speed;
+          superVegitto.frictionX = 1;
         };
         right.release = () => {
           if (!left.isDown && superVegitto.vy === 0) {
-            superVegitto.vx = 0;
+            //superVegitto.vx = 0;
+            superVegitto.accelerationX = 0;
+            superVegitto.frictionX = superVegitto.drag;
           }
         };
         //Down
         down.press = () => {
-          superVegitto.vy = 5;
-          superVegitto.vx = 0;
+          //superVegitto.vy = 5;
+          //superVegitto.vx = 0;
+          superVegitto.accelerationY = superVegitto.speed;
+          superVegitto.frictionY = 1;
         };
         down.release = () => {
           if (!up.isDown && superVegitto.vx === 0) {
-            superVegitto.vy = 0;
+            //superVegitto.vy = 0;
+            superVegitto.accelerationY = 0;
+            superVegitto.frictionY = superVegitto.drag;
           }
         };
+
         //Set the game's current state to `play`
         state = play;
 
@@ -120,8 +145,41 @@
 
       function play() {
         //Move the sprite 1 pixel per frame
+        //superVegitto.x += superVegitto.vx;
+        //superVegitto.y += superVegitto.vy;
+
+        //Apply acceleration by adding the acceleration to the sprite's velocity
+        superVegitto.vx += superVegitto.accelerationX;
+        superVegitto.vy += superVegitto.accelerationY;
+        //Apply friction by multiplying sprite's velocity by the friction
+        superVegitto.vx *= superVegitto.frictionX;
+        superVegitto.vy *= superVegitto.frictionY;
+        //Gravity
+        superVegitto.vy += 0.05;
+        //Apply the velocity to the sprite's position to make it move
         superVegitto.x += superVegitto.vx;
         superVegitto.y += superVegitto.vy;
+
+        //Use the `contain` function to keep the sprite inside the canvas
+        let collision = contain(superVegitto, {
+          x: 0,
+          y: 0,
+          width: renderer.view.width,
+          height: renderer.view.height,
+        });
+
+        //Check for a collision. If the value of `collision` isn't
+        //`undefined` then you know the sprite hit a boundary
+        if (collision) {
+          //Reverse the sprite's `vx` value if it hits the left or right
+          if (collision.has("left") || collision.has("right")) {
+            superVegitto.vx = -superVegitto.vx;
+          }
+          //Reverse the sprite's `vy` value if it hits the top or bottom
+          if (collision.has("top") || collision.has("bottom")) {
+            superVegitto.vy = -superVegitto.vy;
+          }
+        }
       }
     </script>
   </body>
