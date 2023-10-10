@@ -14,7 +14,15 @@
         autoDetectRenderer = PIXI.autoDetectRenderer,
         loader = PIXI.loader,
         resources = PIXI.loader.resources,
-        Sprite = PIXI.Sprite;
+        Sprite = PIXI.Sprite,
+        Graphics = PIXI.Graphics;
+
+      function rotateAroundPoint(pointX, pointY, distanceX, distanceY, angle) {
+        let point = {};
+        point.x = pointX + Math.cos(angle) * distanceX;
+        point.y = pointY + Math.sin(angle) * distanceY;
+        return point;
+      }
 
       //Create a Pixi stage and renderer
       let stage = new Container(),
@@ -32,6 +40,23 @@
       let superVegitto, state, collision;
 
       function setup() {
+        //Create the line
+        line = new Graphics();
+        stage.addChild(line);
+        //Add `angleA` and `angleB` properties
+        line.angleA = 0;
+        line.angleB = 0;
+
+        let circle = new Graphics();
+        circle.beginFill(0xff9933);
+        circle.lineStyle(20, 0xff9900, 1);
+        circle.drawEllipse(0, 0, 150, 40);
+        circle.endFill();
+        circle.x = renderer.width / 2;
+        circle.y = renderer.height - 0;
+        circle.alpha = 0.5;
+        stage.addChild(circle);
+
         //Create the `superVegitto` sprite
         superVegitto = new Sprite(
           resources["./images/Super_vegito_sprite.webp"].texture
@@ -180,6 +205,20 @@
             superVegitto.vy = -superVegitto.vy;
           }
         }
+
+        //Make the line's start point rotate clockwise around x/y point 64, 64
+        line.angleA += 0.02;
+        let rotatingA = rotateAroundPoint(64, 64, 20, 20, line.angleA);
+        //Make the line's end point rotate counter-clockwise
+        //around x/y point 192, 208
+        line.angleB -= 0.03;
+        let rotatingB = rotateAroundPoint(192, 208, 20, 20, line.angleB);
+        //Clear the line to reset it from the previous frame
+        line.clear();
+        //Draw the line using the rotating points as start and end points
+        line.lineStyle(4, 0x000000, 1);
+        line.moveTo(rotatingA.x, rotatingA.y);
+        line.lineTo(rotatingB.x, rotatingB.y);
       }
     </script>
   </body>
