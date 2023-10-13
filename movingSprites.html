@@ -49,11 +49,16 @@
           "./images/tilsetVegito/vegitoBlue4.png",
           "./images/tilsetVegito/vegitoBlue5.png",
           "./images/tilsetVegito/vegitoBlue6.png",
+          "./images/tilsetVegito/vegitoBlueMoving.json",
         ])
         .load(setup);
 
       //Define any variables that are used in more than one function
       let superVegitto, state, collision, circle;
+
+      let vegitoBlueMoving = undefined,
+        su = undefined,
+        id = undefined;
 
       function setup() {
         let su = new SpriteUtilities(PIXI);
@@ -181,7 +186,7 @@
             superVegitto.frictionY = superVegitto.drag;
           }
         };
-
+        /*
         let vegitoBlue0 = new Sprite(
             resources["./images/tilsetVegito/vegitoBlue0.png"].texture
           ),
@@ -211,18 +216,39 @@
             vegitoBlue4,
             vegitoBlue5,
             vegitoBlue6,
-          ];
+          ]; */
 
-        /*let vegitoBlue = new MovieClip(vegitoBlueTextures);
+        superVegitto.visible = false;
 
-        vegitoBlue.position.set(50, renderer.view.height);
+        id = resources["./images/tilsetVegito/vegitoBlueMoving.json"].textures;
 
-        stage.addChild(vegitoBlue);
+        let frames = [
+          id["vegitoBlue0.png"],
+          id["vegitoBlue1.png"],
+          id["vegitoBlue2.png"],
+          id["vegitoBlue3.png"],
+          id["vegitoBlue4.png"],
+          id["vegitoBlue5.png"],
+          id["vegitoBlue6.png"],
+          id["vegitoBlue7.png"],
+        ];
 
-        vegitoBlue.play();
-        //console.log(vegitoBlue.textures);*/
+        /*    console.log("id[vegitoBlue7.png]", id["vegitoBlue7.png"].frame.localy);
+        console.log("power position:", frames[7]); */
 
-        b = new Bump(PIXI);
+        vegitoBlueMoving = new MovieClip(frames);
+
+        vegitoBlueMoving.loop = true;
+
+        vegitoBlueMoving.position.set(50, 50);
+        vegitoBlueMoving.scale.set(1.5, 1.5);
+
+        stage.addChild(vegitoBlueMoving);
+
+        vegitoBlueMoving.play();
+        vegitoBlueMoving.animationSpeed = 0.08;
+
+        let b = new Bump(PIXI);
 
         //Set the game's current state to `play`
         state = play;
